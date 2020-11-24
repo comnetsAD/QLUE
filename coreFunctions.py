@@ -81,7 +81,6 @@ def compareWithScreenshots(SCREENSHOT_SRC,SCREENSHOT_CMP):
 def evaluateSrcPage (WEBSITE,PROXY=False):
     sessionID = getSessionID()
 
-
     firefoxOptions = webdriver.FirefoxOptions()
     firefoxOptions.set_headless()
     if PROXY:
