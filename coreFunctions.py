@@ -64,14 +64,11 @@ def compareWithNoProxy(WEBSITE_SRC,WEBSITE_CMP):
     return score
 
 
-
-
 def compareWithScreenshots(SCREENSHOT_SRC,SCREENSHOT_CMP):
     print("Source screenshot:\t{}\nComparison screenshot:\t{}".format(SCREENSHOT_SRC,SCREENSHOT_CMP))
 
     score = compareImages (SCREENSHOT_SRC,SCREENSHOT_CMP)
-
-    clearFolders()
+    print (f"PQual Score: {score}")
 
     return score
 

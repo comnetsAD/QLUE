@@ -5,7 +5,9 @@ PROXY_A = ""
 PROXY_B = ""
 MODES = ["proxy","no_proxy","screenshot"]
 
-def compare(*args,mode):
+def compare(*args,mode="screenshot",report="false"):
+
+    coreFunctions.generateReport = report
 
     if not 1<=len(args)<=2:
         raise ValueError("Recieved unknown number of arguments. refer to the documentation")
@@ -16,10 +18,10 @@ def compare(*args,mode):
     if mode == "proxy":
         if len(args)!=1: raise ValueError("Recieved unknown number of arguments. refer to the documentation")
         print(args)
-        coreFunctions.compareWithProxy(args[0],PROXY_A,PROXY_B)
+        return coreFunctions.compareWithProxy(args[0],PROXY_A,PROXY_B)
     elif mode == "no_proxy":
         if len(args)!=2: raise ValueError("Recieved unknown number of arguments. refer to the documentation")
-        coreFunctions.compareWithNoProxy(args[0],args[1])
+        return coreFunctions.compareWithNoProxy(args[0],args[1])
     elif mode == "screenshot":
         if len(args)!=2: raise ValueError("Recieved unknown number of arguments. refer to the documentation")
-        coreFunctions.compareWithScreenshots(args[0],args[1])
+        return coreFunctions.compareWithScreenshots(args[0],args[1])
