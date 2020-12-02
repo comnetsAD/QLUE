@@ -3,6 +3,7 @@ import numpy as np
 import coreFunctions
 
 
+"""
 ### This acts as a base layer
 base = cv2.imread("one.png")
 
@@ -10,7 +11,6 @@ base = cv2.imread("one.png")
 ### This is the component to be cropped
 ### In actual implementation this could be looped over
 baseCropped = base[180:570,480:1200,:]
-
 
 layer1 = np.zeros((base.shape[0], base.shape[1], base.shape[2]))
 
@@ -32,6 +32,21 @@ print(baseCropped.shape)
 
 ### set the alpha for the component as zero
 baseMasked[topX:topX+baseCropped.shape[0],topY:topY+baseCropped.shape[1],3] = np.zeros((baseCropped.shape[0], baseCropped.shape[1]))
+"""
+
+base = cv2.imread("one.png")
+baseCropped = base[180:570,480:1200,:]
+topX, topY =  coreFunctions.find_image(base,baseCropped)
+
+topX -=1
+topY -=1
+
+base[topX:topX+baseCropped.shape[0],topY:topY+baseCropped.shape[1],:] -= baseCropped
+
+
+
+# x = base[topX:topX+baseCropped.shape[0],topY:topY+baseCropped.shape[1],:]
+# print(np.unique(x.flatten()))
 
 cv2.imwrite("comp.png", baseCropped)
-cv2.imwrite("out.png", baseMasked)
+cv2.imwrite("out.png", base)

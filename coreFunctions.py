@@ -240,6 +240,19 @@ def componentAnalysis_multipleTags(WEBSITE,TAGS,SRC_SESSION,CMP_SESSION):
 
     return scores
 
+def subtractImages(SRC_PATH, SRC_IMAGE,components):
+    base = SRC_IMAGE
+
+    for c in components:
+        subject = c["component"]
+        topX, topY =  c["position"]
+        try:
+            base[topX:topX+subject.shape[0],topY:topY+subject.shape[1],:] -= subject
+            # print(np.unique(base[topX:topX+subject.shape[0],topY:topY+subject.shape[1],:].flatten()))
+        except:
+            print ("err")
+
+    cv2.imwrite("reports/" + SRC_PATH.split("/")[-1], base)
 
 def compareImages(SRC_PATH, CMP_PATH):
 
@@ -254,21 +267,36 @@ def compareImages(SRC_PATH, CMP_PATH):
 
     # print('breaking SRC into components')
     area,components = breakIntoComponents(SRC_th, SRC_IMAGE)
-    totalComponentArea = 0
 
     # print(f'broken into {len(components)} components')
 
     totalComponentArea = 0
 
-    for c in components:
+    found = []
+    notFound = []
 
+    for cmp in components:
+        c = cmp["component"]
         totalComponentArea +=  c.shape[0]*c.shape[1]
-        if find_image(SRC_IMAGE,c):
+        matchFound = find_image(CMP_IMAGE,c) #returns tuple of x,y if found
+        if matchFound:
             totalScore += c.shape[0]*c.shape[1]
+            found.append({"position":matchFound,"component":c})
+        else:
+            croppedFromOriginalPos = CMP_IMAGE[cmp["loc"][1]:cmp["loc"][1]+c.shape[0],cmp["loc"][0]:cmp["loc"][0]+c.shape[1],:]
+            print(c.shape,croppedFromOriginalPos.shape)
+            try:
+                totalScore += c.shape[0]*c.shape[1]* ssim(c,croppedFromOriginalPos,multichannel=True)
+                notFound.append({"position":cmp["loc"][::-1],"component":c})
+            except:
+                ("dim error")
+
+
+    if generateReport:
+        subtractImages (SRC_PATH,CMP_IMAGE,found+notFound)
 
 
     return totalScore/totalComponentArea
-
 
 def binaryThresholding(img):
     img = cv2.medianBlur(img,5)
@@ -348,17 +376,18 @@ def breakIntoComponents(img, originalImage):
         # mask = cv2.erode(mask, np.ones((50, 50)))
 
         mask = mask.reshape(markers.shape[0],markers.shape[1],nChannels)
-        mask = crop(mask,originalImage)
+
+        mask, loc = crop(mask,originalImage)
 
         componentArea = mask.shape[0]*mask.shape[1]
 
         # discard small components
         if componentArea > 100:
             totalArea += componentArea
-            maskArray.append(mask)
+            maskArray.append({"component":mask,"loc":loc})
 
     for i in range(len(maskArray)):
-        cv2.imwrite("screenshots/component_" + str(i) + ".png" , maskArray[i])
+        cv2.imwrite("screenshots/component_" + str(i) + ".png" , maskArray[i]["component"])
 
     return totalArea,maskArray
 
@@ -396,9 +425,10 @@ def crop(mask,imgOrg):
     x,y,w,h = cv2.boundingRect(thresh)
 
     crop = imgOrg[y:y+h,x:x+w]
+    loc = [x,y]
 
     # cv2.imwrite("1.jpg",imgOrg)
-    return crop
+    return crop,loc
 
 def trim_recursive_crop(img_norm,img_org):
     if img_norm.shape[0] == 0:
@@ -465,7 +495,7 @@ def find_image(im, tpl):
     # Find exact match
     for y, x in zip(*possible_match):
         if np.all(im[y+1:y+h+1, x+1:x+w+1] == tpl):
-            return (y+1, x+1)
+            return (y, x)
 
     return False
     raise Exception("Image not found")
@@ -502,8 +532,8 @@ def resetPreferences():
     generateReport = False
 
 
-def generateReport(scores,errorLog):
-    pass
+# def generateReport(scores,errorLog):
+#     pass
 
 def getSessionID():
     r = random.randint(100000000,999999999)
