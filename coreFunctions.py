@@ -1,4 +1,4 @@
-from skimage.measure import compare_ssim as ssim
+from skimage.metrics import structural_similarity as ssim
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from bs4 import BeautifulSoup as bs
