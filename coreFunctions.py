@@ -264,7 +264,7 @@ def compareImages(SRC_PATH, CMP_PATH):
     for c in components:
 
         totalComponentArea +=  c.shape[0]*c.shape[1]
-        if find_image(SRC_IMAGE,c):
+        if find_image(CMP_IMAGE,c):
             totalScore += c.shape[0]*c.shape[1]
 
 
