@@ -13,3 +13,4 @@ pqual.compare(WEBSITE_SRC,WEBSITE_CMP,mode="no_proxy")
 
 ## comparing screenshots
 pqual.compare("one.png","two.png",mode="screenshot")
+pqual.compare("original.png","reduced.png",mode="screenshot")

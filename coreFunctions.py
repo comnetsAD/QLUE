@@ -1,4 +1,4 @@
-from skimage.measure import compare_ssim as ssim
+from skimage.metrics import structural_similarity as ssim
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from bs4 import BeautifulSoup as bs
@@ -264,7 +264,7 @@ def compareImages(SRC_PATH, CMP_PATH):
     for c in components:
 
         totalComponentArea +=  c.shape[0]*c.shape[1]
-        if find_image(SRC_IMAGE,c):
+        if find_image(CMP_IMAGE,c):
             totalScore += c.shape[0]*c.shape[1]
 
 
